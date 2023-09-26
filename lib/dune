@@ -1,5 +1,5 @@
 (library
- (name vexilla_ocaml_sdk)
- (libraries lwt cohttp-lwt-unix yojson ptime ptime.clock.os)
+ (name vexilla)
+ (libraries lwt cohttp-lwt-unix yojson fmt ppx_deriving_yojson.runtime ptime ptime.clock.os)
  (preprocess
   (pps ppx_deriving.show ppx_deriving_yojson)))

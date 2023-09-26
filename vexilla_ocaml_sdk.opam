@@ -12,6 +12,7 @@ bug-reports: "https://github.com/dmmulroy/vexilla-ocaml-sdk/issues"
 depends: [
   "cohttp-lwt-unix"
   "dune" {>= "3.10"}
+  "fmt"
   "lwt_ssl"
   "ocaml"
   "ppx_deriving"

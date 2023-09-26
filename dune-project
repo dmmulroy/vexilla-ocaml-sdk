@@ -23,6 +23,7 @@
  (depends
   cohttp-lwt-unix
   dune
+  fmt
   lwt_ssl
   ocaml
   ppx_deriving

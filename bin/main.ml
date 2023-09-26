@@ -1,1 +1,3 @@
-let () = print_endline "Hello, World!"
+let () =
+  Vexilla.Hello.world ();
+  Vexilla.Hello.world ()
