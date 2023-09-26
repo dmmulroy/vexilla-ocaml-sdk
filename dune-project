@@ -1,4 +1,4 @@
-(lang dune 3.9)
+(lang dune 3.10)
 
 (name vexilla_ocaml_sdk)
 
@@ -17,16 +17,19 @@
 
 (package
  (name vexilla_ocaml_sdk)
- (synopsis "Seamlessly transfer playlists between music streaming services")
+ (synopsis "Vexilla OCaml SDK")
  (description
-  "Seamlessly transfer playlists between music streaming services")
+  "Vexilla OCaml SDK")
  (depends
   cohttp-lwt-unix
   dune
   lwt_ssl
   ocaml
-  ppx_deriving)
+  ppx_deriving
+  ppx_deriving_yojson
+  ptime
+  yojson)
  (tags
-  (music, ocaml, cli, learning, spotify, apple-music)))
+  (feature-flags)))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
