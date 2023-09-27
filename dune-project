@@ -29,6 +29,7 @@
   ppx_deriving
   ppx_deriving_yojson
   ptime
+  uri
   yojson)
  (tags
   (feature-flags)))
