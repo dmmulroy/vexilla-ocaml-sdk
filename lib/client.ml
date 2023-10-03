@@ -1,15 +1,8 @@
-type group_lookup_table =
-  ([ `Name of Group.name | `Id of Group.id ], Group.id) Hashtbl.t
-
 type environment_lookup_table =
-  ( [ `Name of Environment.name | `Id of Environment.id ],
-    Environment.id )
-  Hashtbl.t
+  (Group.id, Environment.id, Environment.name) Lookup.Composite_table.t
 
 type feature_lookup_table =
-  ([ `Name of Feature.name | `Id of Feature.id ], Feature.id) Hashtbl.t
-
-type 'a group_entity_lookup_table = (Group.id, 'a) Hashtbl.t
+  (Group.id, Feature.id, Feature.name) Lookup.Composite_table.t
 
 type t = {
   environment : string;
@@ -18,9 +11,9 @@ type t = {
   show_logs : bool;
   manifest : Manifest.t;
   flag_groups : (Group.id, Group.t) Hashtbl.t;
-  group_lookup_table : group_lookup_table;
-  environment_lookup_table : environment_lookup_table group_entity_lookup_table;
-  feature_lookup_table : feature_lookup_table group_entity_lookup_table;
+  group_lookup_table : (Group.id, Group.name) Lookup.Table.t;
+  environment_lookup_table : environment_lookup_table;
+  feature_lookup_table : feature_lookup_table;
 }
 
 let make ?(show_logs = false) ~environment ~base_url ~instance_id () =
@@ -31,7 +24,16 @@ let make ?(show_logs = false) ~environment ~base_url ~instance_id () =
     show_logs;
     manifest = Manifest.empty;
     flag_groups = Hashtbl.create 10;
-    group_lookup_table = Hashtbl.create 10;
-    environment_lookup_table = Hashtbl.create 10;
-    feature_lookup_table = Hashtbl.create 10;
+    group_lookup_table = Lookup.Table.make ();
+    environment_lookup_table = Lookup.Composite_table.make ();
+    feature_lookup_table = Lookup.Composite_table.make ();
   }
+
+let set_manifest t (manifest : Manifest.t) =
+  let group_lookup_table =
+    Lookup.Table.make ~size:(List.length manifest.groups) ()
+  in
+  manifest.groups
+  |> List.map (fun (group : Manifest.manifest_group) -> (group.id, group.name))
+  |> Lookup.Table.add_list group_lookup_table;
+  { t with manifest; group_lookup_table }

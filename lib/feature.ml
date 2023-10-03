@@ -1,21 +1,20 @@
 type id = string
 type name = string
-type toggle = { value : bool } [@@deriving yojson]
-type gradual = { value : int; seed : float } [@@deriving yojson]
+type attributes = { id : id; name : name; schedule : Schedule.t }
+type toggle = { attributes : attributes; value : bool }
+type gradual = { attributes : attributes; value : int; seed : float }
 
-type selective = String of string list | Int of int list | Float of float list
-[@@deriving yojson]
+type selective_value =
+  | String_list of string list
+  | Int_list of int list
+  | Float_list of float list
 
-type value = String of string | Int of int | Float of float
-[@@deriving yojson]
+type selective = { attributes : attributes; value : selective_value }
+type scalar_value = String of string | Int of int | Float of float
+type value = { attributes : attributes; value : scalar_value }
 
-type kind = Toggle of toggle | Gradual of gradual | Value of value
-[@@deriving yojson]
-
-type t = {
-  name : name;
-  feature_id : string; (* TODO *)
-  schedule_type : string; (* TODO *)
-  schedule : string; (* TODO *)
-  kind : kind;
-}
+type t =
+  | Toggle of toggle
+  | Gradual of gradual
+  | Selective of selective
+  | Value of value
