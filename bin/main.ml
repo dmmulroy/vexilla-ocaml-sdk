@@ -2,8 +2,8 @@
 
 let () =
   let client =
-    Vexilla.Client.make ~environment:"test-env"
+    Vexilla.Client.make
       ~base_url:(Uri.of_string "http://localhost:8080")
-      ~instance_id:"test-id" ()
+      ~environment:"test-env" ~instance_id:"test-id" ()
   in
   ()
