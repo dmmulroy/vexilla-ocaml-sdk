@@ -29,11 +29,11 @@ let make ?(show_logs = false) ~environment ~base_url ~instance_id () =
     feature_lookup_table = Lookup.Composite_table.make ();
   }
 
-let set_manifest t (manifest : Manifest.t) =
+let set_manifest client (manifest : Manifest.t) =
   let group_lookup_table =
     Lookup.Table.make ~size:(List.length manifest.groups) ()
   in
   manifest.groups
   |> List.map (fun (group : Manifest.manifest_group) -> (group.id, group.name))
   |> Lookup.Table.add_list group_lookup_table;
-  { t with manifest; group_lookup_table }
+  { client with manifest; group_lookup_table }
