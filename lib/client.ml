@@ -30,10 +30,14 @@ let make ?(show_logs = false) ~environment ~base_url ~instance_id () =
   }
 
 let set_manifest client (manifest : Manifest.t) =
-  let group_lookup_table =
-    Lookup.Table.make ~size:(List.length manifest.groups) ()
-  in
-  manifest.groups
-  |> List.map (fun (group : Manifest.manifest_group) -> (group.id, group.name))
-  |> Lookup.Table.add_list group_lookup_table;
-  { client with manifest; group_lookup_table }
+  if manifest.version <> Manifest.latest_manifest_version then
+    Error (`Invalid_manifest_version manifest.version)
+  else
+    let group_lookup_table =
+      Lookup.Table.make ~size:(List.length manifest.groups) ()
+    in
+    manifest.groups
+    |> List.map (fun (group : Manifest.manifest_group) ->
+           (group.id, group.name))
+    |> Lookup.Table.add_list group_lookup_table;
+    Ok { client with manifest; group_lookup_table }
