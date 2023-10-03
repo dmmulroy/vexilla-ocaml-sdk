@@ -34,27 +34,3 @@ let make ?(show_logs = false) ~environment ~base_url ~instance_id () =
     environment_lookup_table = Lookup.Composite_table.make ();
     feature_lookup_table = Lookup.Composite_table.make ();
   }
-
-(* let set_manifest client (manifest : Manifest.t) =
-   if manifest.version <> Manifest.latest_manifest_version then
-     Error (`Invalid_manifest_version manifest.version)
-   else
-     let group_lookup_table =
-       Lookup.Table.make ~size:(List.length manifest.groups) ()
-     in
-     manifest.groups
-     |> List.map (fun (group : Manifest.manifest_group) ->
-            (group.id, group.name))
-     |> Lookup.Table.add_list group_lookup_table;
-     Ok { client with manifest; group_lookup_table } *)
-
-(* let latest_manifest_version = "1.0"
-   let empty = { version = latest_manifest_version; groups = [] } *)
-
-(* let get ~(base_url : Uri.t) ~(fetch_hook : (t, Error.t) Fetch.hook) : t Lwt.t =
-   let* result = Uri.with_path base_url "manifest.json" |> fetch_hook in
-   match result with
-   | Ok manifest -> Lwt.return manifest
-   | Error err ->
-       Fmt.pr "Error: failed to fetch manifest: %s\n%!" (Error.to_string err);
-       Lwt.return empty *)
