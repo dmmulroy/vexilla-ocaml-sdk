@@ -60,6 +60,7 @@ module Group = struct
   type name = string
   type id = string
   type meta = { version : string }
+  type group_id_or_name = Id of id | Name of name
 
   type t = {
     id : id;
@@ -76,4 +77,7 @@ module Manifest = struct
   type group_id = string
   type manifest_group = { name : group_name; id : group_id }
   type t = { version : string; groups : manifest_group list }
+
+  let latest_manifest_version = "1.0"
+  let empty = { version = latest_manifest_version; groups = [] }
 end
