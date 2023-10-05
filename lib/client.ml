@@ -1,15 +1,3 @@
-type environment_lookup_table =
-  ( Types.Group.id,
-    Types.Environment.id,
-    Types.Environment.name )
-  Lookup.Composite_table.t
-
-type feature_lookup_table =
-  ( Types.Group.id,
-    Types.Feature.id,
-    Types.Feature.name )
-  Lookup.Composite_table.t
-
 type t = {
   environment : string;
   base_url : Uri.t;
@@ -17,9 +5,9 @@ type t = {
   show_logs : bool;
   manifest : Types.Manifest.t;
   flag_groups : (Types.Group.id, Types.Group.t) Hashtbl.t;
-  group_lookup_table : (Types.Group.id, Types.Group.name) Lookup.Table.t;
-  environment_lookup_table : environment_lookup_table;
-  feature_lookup_table : feature_lookup_table;
+  group_table : Lookup.Group_table.t;
+  environment_table : Lookup.Composite_environment_table.t;
+  feature_table : Lookup.Composite_feature_table.t;
 }
 
 let make ?(show_logs = false) ~environment ~base_url ~instance_id () =
@@ -30,7 +18,7 @@ let make ?(show_logs = false) ~environment ~base_url ~instance_id () =
     show_logs;
     manifest = Types.Manifest.empty;
     flag_groups = Hashtbl.create 10;
-    group_lookup_table = Lookup.Table.make ();
-    environment_lookup_table = Lookup.Composite_table.make ();
-    feature_lookup_table = Lookup.Composite_table.make ();
+    group_table = Lookup.Group_table.make ();
+    environment_table = Lookup.Composite_environment_table.make ();
+    feature_table = Lookup.Composite_feature_table.make ();
   }
