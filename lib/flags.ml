@@ -72,4 +72,4 @@ let set ~(client : Client.t) ~group group_id_or_name =
           attributes.id)
       (group.features |> Hashtbl.to_seq_values |> List.of_seq)
   in
-  Ok ()
+  Ok client
