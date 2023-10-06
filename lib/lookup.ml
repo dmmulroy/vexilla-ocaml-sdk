@@ -64,8 +64,28 @@ struct
 end
 
 module Group_table = Make_by_id_or_name (Types.Group)
-module Feature_table = Make_by_id_or_name (Types.Feature)
-module Environment_table = Make_by_id_or_name (Types.Environment)
+
+module Feature_table = struct
+  include Make_by_id_or_name (Types.Feature)
+
+  let set_feature ~feature feature_table =
+    let open Types.Feature in
+    let { id; name; _ } = attributes feature in
+    feature_table
+    |> set ~key:(`Id id) ~value:id
+    |> set ~key:(`Name name) ~value:id
+end
+
+module Environment_table = struct
+  include Make_by_id_or_name (Types.Environment)
+
+  let set_environment ~environment environment_table =
+    let open Types.Environment in
+    let { id; name; _ } = environment in
+    environment_table
+    |> set ~key:(`Id id) ~value:id
+    |> set ~key:(`Name name) ~value:id
+end
 
 module Composite_feature_table = Make (struct
   type key = Types.Group.id

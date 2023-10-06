@@ -18,8 +18,7 @@
 (package
  (name vexilla_ocaml_sdk)
  (synopsis "Vexilla OCaml SDK")
- (description
-  "Vexilla OCaml SDK")
+ (description "Vexilla OCaml SDK")
  (depends
   cohttp-lwt-unix
   dune
@@ -31,7 +30,6 @@
   ptime
   uri
   yojson)
- (tags
-  (feature-flags)))
+ (tags (feature-flags)))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
