@@ -58,3 +58,7 @@ let set ~(client : Client.t) ~group group_id_or_name =
   in
   Lwt.return_ok
     { client with composite_environment_table; composite_feature_table }
+
+let sync ~(client : Client.t) ~fetch_hook group_id_or_name =
+  let+ group = get ~client ~fetch_hook group_id_or_name in
+  Lwt.return_ok @@ set ~client ~group group_id_or_name

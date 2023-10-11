@@ -17,7 +17,7 @@ module Feature = struct
   type name = string
   type attributes = { id : id; name : name; schedule : Schedule.t }
   type toggle = { attributes : attributes; value : bool }
-  type gradual = { attributes : attributes; value : int; seed : float }
+  type gradual = { attributes : attributes; value : float; seed : float }
 
   type selective_value =
     | String_list of string list
@@ -52,7 +52,7 @@ module Environment = struct
     value : Feature.value;
   }
 
-  type feature_key = Id of Feature.id | Name of Feature.name
+  type feature_key = [ `Id of Feature.id | `Name of Feature.name ]
 
   type t = {
     name : name;

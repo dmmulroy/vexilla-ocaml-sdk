@@ -1,19 +1,6 @@
 open Syntax
 open Let
 
-(* let set_manifest ~(client : Client.t) (manifest : Types.Manifest.t) =
-   if manifest.version <> Types.Manifest.latest_manifest_version then
-     Error (`Invalid_manifest_version manifest.version)
-   else
-     let group_table =
-       Lookup.Table.make ~size:(List.length manifest.groups) ()
-     in
-     manifest.groups
-     |> List.map (fun (group : Types.Manifest.manifest_group) ->
-            (group.id, group.name))
-     |> Lookup.Table.add_list group_table;
-     Ok { client with manifest; group_table } *)
-
 let set_manifest ~(client : Client.t) (manifest : Types.Manifest.t) =
   if manifest.version <> Types.Manifest.latest_manifest_version then
     Error (`Invalid_manifest_version manifest.version)
