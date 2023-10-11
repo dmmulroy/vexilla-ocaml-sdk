@@ -33,6 +33,12 @@ module Feature = struct
     | Gradual of gradual
     | Selective of selective
     | Value of value
+
+  let attributes = function
+    | Toggle t -> t.attributes
+    | Gradual g -> g.attributes
+    | Selective s -> s.attributes
+    | Value v -> v.attributes
 end
 
 module Environment = struct
@@ -73,8 +79,8 @@ module Group = struct
 end
 
 module Manifest = struct
-  type group_name = string
-  type group_id = string
+  type group_name = Group.name
+  type group_id = Group.id
   type manifest_group = { name : group_name; id : group_id }
   type t = { version : string; groups : manifest_group list }
 
