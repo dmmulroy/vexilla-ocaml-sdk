@@ -32,7 +32,7 @@ let get_real_group_id ~client group_id_or_name =
   |> Option.to_result ~none:`Flag_group_not_found
 
 let get_real_feature_id ~client group_id feature_id_or_name =
-  let ( >>= ) = Result.bind in
+  let open Infix.Result in
   client.composite_feature_table
   |> Lookup.Composite_feature_table.find ~key:group_id
   |> Option.to_result ~none:`Flag_group_not_found
@@ -41,7 +41,7 @@ let get_real_feature_id ~client group_id feature_id_or_name =
   |> Option.to_result ~none:`Feature_not_found
 
 let get_real_environment_id ~client group_id =
-  let ( >>= ) = Result.bind in
+  let open Infix.Result in
   client.composite_environment_table
   |> Lookup.Composite_environment_table.find ~key:group_id
   |> Option.to_result ~none:`Flag_group_not_found
@@ -73,31 +73,41 @@ let get_feature ~client group_id_or_name feature_name_or_id =
 let should ~client ?instance_id group_id_or_name feature_name_or_id =
   let open Types.Feature in
   let@ feature = get_feature ~client group_id_or_name feature_name_or_id in
-  match feature with
-  | Toggle toggle -> Ok toggle.value
-  | Gradual gradual ->
-      let hash = Hash.hash_instance_id ~seed:gradual.seed client.instance_id in
-      Ok (hash <= gradual.value)
-  | Selective selective -> (
-      let instance_id' =
-        Option.value instance_id ~default:(`String client.instance_id)
-      in
-      (* Todo: Use Option.is_some *)
-      match (selective.value, instance_id') with
-      | String_list strings, `String id ->
-          strings
-          |> List.find_opt (fun str -> String.equal str id)
-          |> Option.fold ~none:false ~some:(fun _ -> true)
-          |> Result.ok
-      | Int_list ints, `Int id ->
-          ints
-          |> List.find_opt (fun str -> Int.equal str id)
-          |> Option.fold ~none:false ~some:(fun _ -> true)
-          |> Result.ok
-      | Float_list floats, `Float id ->
-          floats
-          |> List.find_opt (fun str -> Float.equal str id)
-          |> Option.fold ~none:false ~some:(fun _ -> true)
-          |> Result.ok
-      | _ -> Result.error `Invalid_instance_id)
-  | Value _ -> Error (`Msg "TODO: handle this error")
+  if not (Schedule.is_schedule_feature_active feature) then Ok false
+  else
+    match feature with
+    | Toggle toggle -> Ok toggle.value
+    | Gradual gradual ->
+        let hash =
+          Hash.hash_instance_id ~seed:gradual.seed client.instance_id
+        in
+        Ok (hash <= gradual.value)
+    | Selective selective -> (
+        let instance_id' =
+          instance_id |> Option.value ~default:(`String client.instance_id)
+        in
+        match (selective.value, instance_id') with
+        | String_list strings, `String id ->
+            strings
+            |> List.find_opt (fun str -> String.equal str id)
+            |> Option.is_some |> Result.ok
+        | Int_list ints, `Int id ->
+            ints
+            |> List.find_opt (fun str -> Int.equal str id)
+            |> Option.is_some |> Result.ok
+        | Float_list floats, `Float id ->
+            floats
+            |> List.find_opt (fun str -> Float.equal str id)
+            |> Option.is_some |> Result.ok
+        | _ -> Result.error `Invalid_instance_id)
+    | Value _ -> Result.error (`Unsupported_should_feature_type "feature")
+
+let value ~client group_id_or_name feature_name_or_id =
+  let open Types.Feature in
+  let@ feature = get_feature ~client group_id_or_name feature_name_or_id in
+  if not (Schedule.is_schedule_feature_active feature) then
+    Result.error `Inactive_feature
+  else
+    match feature with
+    | Value value -> Result.ok value
+    | _ -> Result.error `Unsupported_value_feature_type
