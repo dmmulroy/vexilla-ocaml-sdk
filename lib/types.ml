@@ -1,21 +1,30 @@
 module Schedule = struct
-  type kind = Daily | None | Start_end
+  type schedule_type = Empty | Environment | Global
   type timezone = Utc | Other of string
+  type time_type = None | Start_end | Daily
 
+  (* Note: Assume that we are converting from milliseconds -> second for Ptime.t at (de)serialization boundaries*)
   type t = {
-    start : int64 option;
-    end_ : int64 option;
+    start : Ptime.t;
+    end' : Ptime.t;
     timezone : timezone;
-    kind : kind;
-    start_time : int64;
-    end_time : int64;
+    time_type : time_type;
+    start_time : Ptime.t;
+    end_time : Ptime.t;
   }
 end
 
 module Feature = struct
   type id = string
   type name = string
-  type attributes = { id : id; name : name; schedule : Schedule.t }
+
+  type attributes = {
+    id : id;
+    name : name;
+    schedule : Schedule.t;
+    schedule_type : Schedule.schedule_type;
+  }
+
   type toggle = { attributes : attributes; value : bool }
   type gradual = { attributes : attributes; value : float; seed : float }
 
