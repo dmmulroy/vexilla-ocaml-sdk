@@ -11,12 +11,12 @@ let is_schedule_active_with_now ~schedule ~schedule_type now =
       (* Convert to/from a date to zero out the time to the beginning of the day *)
       let@ start_of_start_date =
         schedule.start |> Ptime.to_date |> Ptime.of_date
-        |> Option.to_result ~none:(`Invalid_date schedule.start)
+        |> Option.to_result ~none:`Invalid_date
       in
       let@ end_of_end_date =
         schedule.end' |> Ptime.to_date |> fun date ->
         Ptime.of_date_time (date, ((23, 59, 59), 0))
-        |> Option.to_result ~none:(`Invalid_date schedule.end')
+        |> Option.to_result ~none:`Invalid_date
       in
       if
         Ptime.is_earlier ~than:start_of_start_date now
@@ -30,11 +30,11 @@ let is_schedule_active_with_now ~schedule ~schedule_type now =
         | Start_end ->
             let@ start =
               Ptime.(of_date_time (to_date start_of_start_date, start_time))
-              |> Option.to_result ~none:(`Invalid_date schedule.start)
+              |> Option.to_result ~none:`Invalid_date
             in
             let@ end' =
               Ptime.(of_date_time (to_date end_of_end_date, end_time))
-              |> Option.to_result ~none:(`Invalid_date schedule.end')
+              |> Option.to_result ~none:`Invalid_date
             in
             let is_after_start_date_time = Ptime.is_later ~than:start now in
             let is_before_end_date_time = Ptime.is_earlier ~than:end' now in
@@ -43,31 +43,32 @@ let is_schedule_active_with_now ~schedule ~schedule_type now =
             let now = Ptime_clock.now () in
             let@ today_zero_timestamp =
               Ptime.to_date now |> Ptime.of_date
-              |> Option.to_result ~none:(`Invalid_date now)
+              |> Option.to_result ~none:`Invalid_date
             in
             let@ zeroed_start_timestamp =
               Ptime.(of_date_time (to_date epoch, start_time))
-              |> Option.to_result ~none:(`Invalid_date Ptime.epoch)
+              |> Option.to_result ~none:`Invalid_date
             in
             let@ zeroed_end_timestamp =
               Ptime.(of_date_time (to_date epoch, end_time))
-              |> Option.to_result ~none:(`Invalid_date Ptime.epoch)
+              |> Option.to_result ~none:`Invalid_date
             in
             let zeroed_end_span = Ptime.to_span zeroed_end_timestamp in
             let day_span = Ptime.Span.of_int_s 86400 in
-            let zeroed_end_timestamp_plus_day =
+            let@ zeroed_end_timestamp_plus_day =
               Ptime.Span.add zeroed_end_span day_span
-              |> Ptime.of_span |> Option.get
+              |> Ptime.of_span
+              |> Option.to_result ~none:`Invalid_date
             in
-            let start_timestamp =
+            let@ start_timestamp =
               Ptime.(
                 Span.add
                   (to_span today_zero_timestamp)
                   (to_span zeroed_start_timestamp)
                 |> of_span)
-              |> Option.get
+              |> Option.to_result ~none:`Invalid_date
             in
-            let end_timestamp =
+            let@ end_timestamp =
               if
                 Ptime.is_later ~than:zeroed_end_timestamp zeroed_start_timestamp
                 || Ptime.to_float_s zeroed_start_timestamp < 0.0
@@ -77,14 +78,14 @@ let is_schedule_active_with_now ~schedule ~schedule_type now =
                     (to_span today_zero_timestamp)
                     (to_span zeroed_end_timestamp_plus_day)
                   |> of_span)
-                |> Option.get
+                |> Option.to_result ~none:`Invalid_date
               else
                 Ptime.(
                   Span.add
                     (to_span today_zero_timestamp)
                     (to_span zeroed_end_timestamp)
                   |> of_span)
-                |> Option.get
+                |> Option.to_result ~none:`Invalid_date
             in
             Ok
               Ptime.(
