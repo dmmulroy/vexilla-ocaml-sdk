@@ -73,7 +73,8 @@ let get_feature ~client group_id_or_name feature_name_or_id =
 let should ~client ?instance_id group_id_or_name feature_name_or_id =
   let open Types.Feature in
   let@ feature = get_feature ~client group_id_or_name feature_name_or_id in
-  if not (Schedule.is_schedule_feature_active feature) then Ok false
+  let@ is_active = Schedule.is_schedule_feature_active feature in
+  if not is_active then Ok false
   else
     match feature with
     | Toggle toggle -> Ok toggle.value
@@ -105,8 +106,8 @@ let should ~client ?instance_id group_id_or_name feature_name_or_id =
 let value ~client group_id_or_name feature_name_or_id =
   let open Types.Feature in
   let@ feature = get_feature ~client group_id_or_name feature_name_or_id in
-  if not (Schedule.is_schedule_feature_active feature) then
-    Result.error `Inactive_feature
+  let@ is_active = Schedule.is_schedule_feature_active feature in
+  if not is_active then Result.error `Inactive_feature
   else
     match feature with
     | Value value -> Result.ok value
