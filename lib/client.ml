@@ -103,12 +103,13 @@ let should ~client ?instance_id group_id_or_name feature_name_or_id =
         | _ -> Result.error `Invalid_instance_id)
     | Value _ -> Result.error (`Unsupported_should_feature_type "feature")
 
-let value ~client group_id_or_name feature_name_or_id =
+let value ~client ~default ~group_key:group_id_or_name
+    ~feature_key:feature_name_or_id =
   let open Types.Feature in
   let@ feature = get_feature ~client group_id_or_name feature_name_or_id in
   let@ is_active = Schedule.is_schedule_feature_active feature in
-  if not is_active then Result.error `Inactive_feature
+  if not is_active then Ok default
   else
     match feature with
-    | Value value -> Result.ok value
+    | Value { value; _ } -> Result.ok value
     | _ -> Result.error `Unsupported_value_feature_type
