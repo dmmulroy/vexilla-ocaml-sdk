@@ -20,6 +20,7 @@ depends: [
   "ptime"
   "uri"
   "yojson"
+  "alcotest" {with-test}
   "odoc" {with-doc}
 ]
 build: [

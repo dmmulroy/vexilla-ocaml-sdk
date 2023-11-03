@@ -29,7 +29,8 @@
   ppx_deriving_yojson
   ptime
   uri
-  yojson)
+  yojson
+  (alcotest :with-test))
  (tags (feature-flags)))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
