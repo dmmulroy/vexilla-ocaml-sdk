@@ -1,2 +1,3 @@
-(test
- (name vexilla_ocaml_sdk))
+(tests
+ (names hash schedule)
+ (libraries alcotest vexilla))

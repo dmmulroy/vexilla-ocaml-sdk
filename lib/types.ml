@@ -12,6 +12,7 @@ module Schedule = struct
     start_time : Ptime.t;
     end_time : Ptime.t;
   }
+  [@@deriving make]
 end
 
 module Feature = struct

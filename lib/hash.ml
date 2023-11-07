@@ -6,4 +6,4 @@ let hash_instance_id ~seed instance_id =
       0.0 bytes
   in
   let base = total *. seed *. 42.0 in
-  Float.(rem base 100.0 |> div 100.0)
+  Float.(rem (trunc base) 100.0 |> (Fun.flip div) 100.0)
