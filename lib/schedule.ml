@@ -9,31 +9,31 @@ let is_schedule_active_with_now ~schedule ~schedule_type now =
   | Empty -> Ok true
   | Environment | Global -> (
       (* Convert to/from a date to zero out the time to the beginning of the day *)
-      let@ start_of_start_date =
+      let@ beginning_of_start_date =
         schedule.start |> Ptime.to_date |> Ptime.of_date
         |> Option.to_result ~none:`Invalid_date
       in
-      let@ end_of_end_date =
+      let@ ending_of_end_date =
         schedule.end' |> Ptime.to_date |> fun date ->
         Ptime.of_date_time (date, ((23, 59, 59), 0))
         |> Option.to_result ~none:`Invalid_date
       in
       if
-        Ptime.is_earlier ~than:start_of_start_date now
-        || Ptime.is_later ~than:end_of_end_date now
+        Ptime.is_earlier now ~than:beginning_of_start_date
+        || Ptime.is_later now ~than:ending_of_end_date
       then Ok false
       else
-        let _, start_time = Ptime.to_date_time schedule.start in
-        let _, end_time = Ptime.to_date_time schedule.end' in
+        let _, start_time = Ptime.to_date_time schedule.start_time in
+        let _, end_time = Ptime.to_date_time schedule.end_time in
         match schedule.time_type with
         | None -> Ok true
         | Start_end ->
             let@ start =
-              Ptime.(of_date_time (to_date start_of_start_date, start_time))
+              Ptime.(of_date_time (to_date beginning_of_start_date, start_time))
               |> Option.to_result ~none:`Invalid_date
             in
             let@ end' =
-              Ptime.(of_date_time (to_date end_of_end_date, end_time))
+              Ptime.(of_date_time (to_date ending_of_end_date, end_time))
               |> Option.to_result ~none:`Invalid_date
             in
             let is_after_start_date_time = Ptime.is_later ~than:start now in

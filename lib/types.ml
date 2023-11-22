@@ -85,14 +85,16 @@ module Group = struct
     environments : (Environment.id, Environment.t) Hashtbl.t;
     features : (Feature.id, Feature.t) Hashtbl.t;
   }
-  [@@deriving make]
+  [@@deriving make, yojson]
 end
 
 module Manifest = struct
-  type group_name = Group.name
-  type group_id = Group.id
-  type manifest_group = { name : group_name; id : group_id }
+  type group_name = Group.name [@@deriving yojson]
+  type group_id = Group.id [@@deriving yojson]
+  type manifest_group = { name : group_name; id : group_id } [@@deriving yojson]
+
   type t = { version : string; groups : manifest_group list }
+  [@@deriving yojson]
 
   let latest_manifest_version = "1.0"
   let empty = { version = latest_manifest_version; groups = [] }
